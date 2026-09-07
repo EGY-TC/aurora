@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aurora — FIFA Online Servers</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><path d='M29 4h9L23 58H13z' fill='%2300d4ff'/><path d='M29 4h9l15 54H43z' fill='%23ff2d92'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08060f; --card:#120f1e; --line:rgba(255,255,255,.08); --line2:rgba(255,255,255,.15);
+  --text:#eeecf6; --muted:#9d99b0;
+  --purple:#8b5cf6; --violet:#7c3aed; --pink:#ff2d92; --cyan:#00d4ff; --teal:#2dd4bf; --green:#4ade80;
+  --grad:linear-gradient(92deg,var(--cyan),var(--violet) 48%,var(--pink));
+  --head:'Sora',sans-serif; --body:'Inter',sans-serif; --mono:'JetBrains Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--body);overflow-x:hidden}
+::selection{background:rgba(139,92,246,.45)}
+::-webkit-scrollbar{width:10px}::-webkit-scrollbar-thumb{background:#2b2342;border-radius:8px}::-webkit-scrollbar-track{background:var(--bg)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.mono{font-family:var(--mono)}
+.label{font-family:var(--mono);font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--muted)}
+
+/* aurora background */
+.aurora{position:fixed;inset:0;z-index:-1;overflow:hidden}
+.aurora i{position:absolute;width:64vw;height:64vw;border-radius:50%;filter:blur(100px);opacity:.22;mix-blend-mode:screen}
+.aurora i:nth-child(1){background:radial-gradient(circle at 35% 35%,#7c3aed,transparent 62%);top:-22%;left:-12%;animation:d1 26s ease-in-out infinite alternate}
+.aurora i:nth-child(2){background:radial-gradient(circle at 60% 40%,#14b8a6,transparent 60%);top:-14%;right:-18%;animation:d2 32s ease-in-out infinite alternate}
+.aurora i:nth-child(3){background:radial-gradient(circle at 50% 50%,#ec4899,transparent 62%);bottom:-32%;left:18%;animation:d3 38s ease-in-out infinite alternate}
+@keyframes d1{to{transform:translate(10vw,6vh) scale(1.15)}}
+@keyframes d2{to{transform:translate(-8vw,10vh) rotate(30deg) scale(1.1)}}
+@keyframes d3{to{transform:translate(6vw,-8vh) rotate(-25deg) scale(1.2)}}
+
+/* nav */
+nav{position:sticky;top:0;z-index:100;background:rgba(8,6,15,.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav-in{display:flex;align-items:center;gap:32px;height:70px}
+.brand{display:flex;align-items:center;gap:13px;text-decoration:none;color:var(--text)}
+.logo-box{position:relative;width:36px;height:36px;filter:drop-shadow(0 0 12px rgba(124,58,237,.6))}
+.logo-box img,.logo-box svg{position:absolute;inset:0;width:100%;height:100%}
+.brand b{font-family:var(--head);font-size:18px;letter-spacing:.3em;font-weight:800}
+.brand span{font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:var(--muted);border-left:1px solid var(--line2);padding-left:12px}
+.nav-links{display:flex;gap:26px;margin-left:auto}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;transition:.25s}
+.nav-links a:hover{color:var(--text)}
+.live-pill{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);background:rgba(45,212,191,.08);border:1px solid rgba(45,212,191,.32);padding:8px 14px;border-radius:999px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 0 rgba(45,212,191,.55);animation:pulse 2s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 9px rgba(45,212,191,0)}100%{box-shadow:0 0 0 0 rgba(45,212,191,0)}}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border:none;cursor:pointer;font-family:var(--head);font-weight:700;font-size:14px;padding:13px 24px;border-radius:12px;text-decoration:none;color:var(--text);transition:.25s}
+.btn-primary{background:var(--grad);box-shadow:0 10px 30px rgba(124,58,237,.35)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 38px rgba(255,45,146,.35)}
+.btn-ghost{background:transparent;border:1px solid var(--line2);color:var(--muted)}
+.btn-ghost:hover{border-color:var(--purple);color:var(--text)}
+.btn-sm{padding:10px 18px;font-size:13px;border-radius:10px}
+.btn.icon{padding:10px 12px}
+
+/* hero */
+.hero{padding:96px 0 70px;position:relative}
+.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center}
+.eyebrow{display:inline-flex;gap:10px;align-items:center;font-family:var(--mono);font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--teal);border:1px solid rgba(45,212,191,.3);background:rgba(45,212,191,.07);padding:8px 16px;border-radius:999px;margin-bottom:26px}
+h1{font-family:var(--head);font-weight:800;font-size:clamp(42px,6vw,74px);line-height:1.04;letter-spacing:-.02em}
+h1 .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.sub{margin:24px 0 34px;color:var(--muted);font-size:17px;line-height:1.75;max-width:540px}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap}
+.trust{margin-top:34px;font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.08em}
+.trust b{color:var(--text)}
+/* emblem */
+.emblem{position:relative;width:330px;height:330px;margin:0 auto}
+.emblem .ring{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 45deg,var(--cyan) 75deg,var(--violet) 160deg,var(--pink) 250deg,transparent 305deg);filter:blur(3px);-webkit-mask:radial-gradient(closest-side,transparent 63%,#000 68%);mask:radial-gradient(closest-side,transparent 63%,#000 68%);animation:spin 16s linear infinite}
+.emblem .ring.r2{inset:34px;opacity:.55;animation:spin 22s linear infinite reverse}
+@keyframes spin{to{transform:rotate(360deg)}}
+.emblem .core{position:absolute;inset:0;display:grid;place-items:center}
+.emblem .core svg{width:132px;height:132px;filter:drop-shadow(0 0 34px rgba(124,58,237,.75))}
+
+/* ticker */
+.ticker{border-block:1px solid var(--line);background:rgba(10,8,18,.55);overflow:hidden}
+.ticker-track{display:flex;gap:56px;width:max-content;padding:13px 0;animation:tick 46s linear infinite}
+.ticker:hover .ticker-track{animation-play-state:paused}
+@keyframes tick{to{transform:translateX(-50%)}}
+.tk{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--muted);white-space:nowrap}
+.tk b{color:var(--text)}
+.tk .sc{color:var(--teal)}
+
+/* stats strip */
+.strip{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,#151129,#0d0b16);margin-top:-34px;position:relative;z-index:2;overflow:hidden}
+.stat{padding:30px 34px;border-left:1px solid var(--line)}
+.stat:first-child{border-left:none}
+.stat label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.stat .val{font-family:var(--head);font-weight:800;font-size:38px;line-height:1}
+.stat small{display:block;margin-top:10px;font-family:var(--mono);font-size:11px;color:var(--teal)}
+
+/* odometer */
+.odo{display:inline-flex;line-height:1}
+.odo .dg{display:inline-block;height:1em;overflow:hidden}
+.odo .reel{display:flex;flex-direction:column;transition:transform .8s cubic-bezier(.22,.9,.24,1)}
+.odo .reel span{height:1em;line-height:1}
+.odo .sep{opacity:.35;margin:0 .05em}
+
+/* sections */
+section{padding:100px 0}
+.sec-head{margin-bottom:52px}
+.sec-head h2{font-family:var(--head);font-weight:800;font-size:clamp(30px,4vw,46px);letter-spacing:-.01em;margin-top:14px}
+.sec-head p{color:var(--muted);margin-top:14px;max-width:560px;line-height:1.7}
+
+/* server rows */
+.srow{display:grid;grid-template-columns:82px 1fr 118px 132px auto;gap:30px;align-items:center;background:linear-gradient(180deg,#151129,#0e0b18);border:1px solid var(--line);border-radius:20px;padding:28px 32px;margin-bottom:18px;transition:.3s}
+.srow:hover{transform:translateY(-4px);border-color:rgba(139,92,246,.5);box-shadow:0 22px 60px rgba(0,0,0,.5)}
+.snum{width:82px;height:82px;border-radius:20px;display:grid;place-items:center;border:1px solid transparent;background:linear-gradient(#171330,#171330) padding-box,var(--grad) border-box}
+.snum span{font-family:var(--head);font-weight:800;font-size:34px;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.sline{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.sline h3{font-family:var(--head);font-size:21px;font-weight:700}
+.tag{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--muted);border:1px solid var(--line2);padding:5px 10px;border-radius:6px}
+.pill{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--green);background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.3);padding:5px 11px;border-radius:999px}
+.pill i{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+.smeta p{color:var(--muted);font-size:14px;line-height:1.65;margin:10px 0 12px;max-width:520px}
+.smini{font-size:10.5px;letter-spacing:.18em;color:#6f6b84}
+.sgauge{position:relative;width:104px;height:104px}
+.sgauge svg{width:104px;height:104px}
+.ring-t{fill:none;stroke:rgba(255,255,255,.08);stroke-width:7}
+.ring-p{fill:none;stroke:url(#ringGrad);stroke-width:7;stroke-linecap:round;stroke-dasharray:213.63;transition:stroke-dashoffset 1s ease}
+.gtext{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.gtext .odo{font-family:var(--head);font-weight:800;font-size:22px}
+.gtext label{font-family:var(--mono);font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.scap strong{font-family:var(--mono);font-size:15px;font-weight:600;display:block}
+.scap label{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);display:block;margin-top:8px}
+.sact{display:flex;gap:10px}
+
+/* setup */
+.setup-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start}
+.steps{list-style:none;position:relative}
+.steps li{position:relative;padding:0 0 44px 66px}
+.steps li::before{content:'';position:absolute;left:21px;top:46px;bottom:6px;width:2px;background:linear-gradient(180deg,var(--violet),transparent)}
+.steps li:last-child::before{display:none}
+.st-no{position:absolute;left:0;top:0;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-family:var(--mono);font-size:13px;font-weight:600;color:var(--text);border:1px solid transparent;background:linear-gradient(#171330,#171330) padding-box,var(--grad) border-box}
+.steps h3{font-family:var(--head);font-size:19px;font-weight:700;margin-bottom:10px}
+.steps p{color:var(--muted);font-size:14.5px;line-height:1.7;max-width:440px}
+.steps .btn{margin-top:16px}
+/* launcher mockup */
+.window{background:#100d1c;border:1px solid var(--line2);border-radius:18px;overflow:hidden;box-shadow:0 40px 90px rgba(0,0,0,.6);position:sticky;top:96px}
+.win-bar{display:flex;align-items:center;gap:8px;padding:14px 18px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.02)}
+.wd{width:11px;height:11px;border-radius:50%}
+.wd.r{background:#ff5f57}.wd.y{background:#febc2e}.wd.g{background:#28c840}
+.win-bar span{margin-left:10px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--muted)}
+.win-body{padding:26px}
+.wfield{display:flex;gap:10px;align-items:center;margin:10px 0 22px}
+.wfield code{flex:1;font-family:var(--mono);font-size:12.5px;color:var(--teal);background:rgba(45,212,191,.06);border:1px solid rgba(45,212,191,.25);border-radius:10px;padding:12px 14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wlist{display:grid;gap:12px;margin-bottom:22px}
+.wlist div{display:flex;align-items:center;gap:12px;font-size:13.5px;color:var(--muted)}
+.wlist svg{color:var(--green);flex:none}
+.wprog{height:6px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;margin-bottom:10px}
+.wprog i{display:block;height:100%;width:100%;background:var(--grad);border-radius:99px;position:relative;overflow:hidden}
+.wprog i::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);animation:shine 2.4s infinite}
+@keyframes shine{to{transform:translateX(100%)}}
+.wnote{font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:22px}
+.wplay{width:100%;padding:16px;font-size:15px;letter-spacing:.06em}
+
+/* pulse */
+.chips{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.chip{display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:rgba(255,255,255,.02);border-radius:999px;padding:12px 20px;font-size:14px;font-weight:500}
+.chip i{width:8px;height:8px;border-radius:50%}
+.chip.ok i{background:var(--green);box-shadow:0 0 10px rgba(74,222,128,.7)}
+.chip.open i{background:var(--cyan);box-shadow:0 0 10px rgba(0,212,255,.7)}
+.chip b{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+.chip.ok b{color:var(--green)}.chip.open b{color:var(--cyan)}
+.upd{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.upd b{color:var(--teal);font-weight:600}
+
+/* footer */
+footer{border-top:1px solid var(--line);padding:52px 0;background:rgba(8,6,15,.6)}
+.foot-in{display:flex;justify-content:space-between;gap:36px;flex-wrap:wrap}
+.foot-links{display:flex;gap:26px;flex-wrap:wrap;align-items:center}
+.foot-links a{color:var(--muted);text-decoration:none;font-size:13px;transition:.2s}
+.foot-links a:hover{color:var(--text)}
+.foot-note{color:#6d6980;font-size:12.5px;line-height:1.75;max-width:580px;margin-top:22px}
+
+/* toast + reveal */
+#toast{position:fixed;bottom:28px;left:50%;transform:translate(-50%,90px);background:#1b1631;border:1px solid rgba(139,92,246,.5);padding:13px 22px;border-radius:12px;font-family:var(--mono);font-size:13px;box-shadow:0 16px 50px rgba(0,0,0,.65);opacity:0;transition:.4s cubic-bezier(.2,.9,.3,1.2);z-index:200;display:flex;gap:10px;align-items:center}
+#toast.show{transform:translate(-50%,0);opacity:1}
+#toast svg{color:var(--green);flex:none}
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:none}
+
+@media(max-width:1080px){
+  .srow{grid-template-columns:82px 1fr auto}
+  .sgauge,.scap{grid-column:2}
+  .sact{grid-column:2;justify-content:flex-start}
+}
+@media(max-width:920px){
+  .hero-grid{grid-template-columns:1fr}
+  .emblem{width:260px;height:260px}
+  .nav-links{display:none}
+  .strip{grid-template-columns:1fr 1fr;margin-top:-20px}
+  .stat:nth-child(3){border-left:none}
+  .setup-grid{grid-template-columns:1fr}
+  .window{position:static}
+}
+@media(max-width:560px){.strip{grid-template-columns:1fr}.stat{border-left:none;border-top:1px solid var(--line)}.stat:first-child{border-top:none}}
+</style>
+</head>
+<body>
+
+<!-- shared defs: logo symbol + ring gradient -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#00d4ff"/><stop offset=".5" stop-color="#8b5cf6"/><stop offset="1" stop-color="#ff2d92"/>
+    </linearGradient>
+    <symbol id="auroraLogo" viewBox="0 0 64 64">
+      <defs>
+        <linearGradient id="lb" x1="14" y1="58" x2="34" y2="4" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#00d4ff"/><stop offset=".55" stop-color="#3b82f6"/><stop offset="1" stop-color="#7c3aed"/>
+        </linearGradient>
+        <linearGradient id="lp" x1="32" y1="4" x2="52" y2="58" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#7c3aed"/><stop offset=".5" stop-color="#d946ef"/><stop offset="1" stop-color="#ff2d92"/>
+        </linearGradient>
+        <linearGradient id="lw" x1="18" y1="46" x2="50" y2="40" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#00d4ff"/><stop offset=".5" stop-color="#7c3aed"/><stop offset="1" stop-color="#ff2d92"/>
+        </linearGradient>
+      </defs>
+      <path d="M29 4h9L23 58H13z" fill="url(#lb)"/>
+      <path d="M29 4h9l15 54H43z" fill="url(#lp)"/>
+      <path d="M17 45c8-9 15 4 28-6l3 8c-12 10-21-3-28 4z" fill="url(#lw)"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="aurora"><i></i><i></i><i></i></div>
+
+<nav>
+  <div class="wrap nav-in">
+    <a class="brand" href="#">
+      <span class="logo-box">
+        <!-- ضع صورة شعارك باسم logo.png بجانب الملف وستظهر تلقائيًا، وإلا يظهر الشعار المرسوم -->
+        <img src="logo.png" alt="Aurora" onerror="this.remove()">
+        <svg><use href="#auroraLogo"/></svg>
+      </span>
+      <b>AURORA</b><span>FIFA NETWORK</span>
+    </a>
+    <div class="nav-links">
+      <a href="#servers">Servers</a>
+      <a href="#setup">Setup guide</a>
+      <a href="#pulse">Network pulse</a>
+    </div>
+    <span class="live-pill"><i class="dot"></i>3 servers live</span>
+    <a class="btn btn-primary btn-sm" href="#setup">Get launcher</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div class="reveal in">
+      <span class="eyebrow">FIFA 15 · FIFA 17 · FIFA 21 — online again</span>
+      <h1>Three generations.<br>One <span class="grad">home</span>.</h1>
+      <p class="sub">Aurora keeps the FIFA generations you love on the pitch — Aurora 15, Aurora 17 and Aurora 21, all live under a single launcher, a single account and one connected community.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#setup">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Get the launcher</a>
+        <a class="btn btn-ghost" href="#servers">Explore servers</a>
+      </div>
+      <p class="trust"><b>37,600+</b> registered players &nbsp;·&nbsp; <b>3</b> live servers &nbsp;·&nbsp; <b>100%</b> uptime this season</p>
+    </div>
+    <div class="emblem reveal in" aria-hidden="true">
+      <div class="ring"></div><div class="ring r2"></div>
+      <div class="core"><svg><use href="#auroraLogo"/></svg></div>
+    </div>
+  </div>
+</header>
+
+<div class="ticker"><div class="ticker-track" id="tickerTrack"></div></div>
+
+<div class="wrap">
+  <div class="strip reveal">
+    <div class="stat"><label>Players online</label><div class="val odo" id="odoPlayers"></div><small>across all servers</small></div>
+    <div class="stat"><label>Live matches</label><div class="val odo" id="odoMatches"></div><small>in progress now</small></div>
+    <div class="stat"><label>Servers live</label><div class="val odo" id="odoServers"></div><small>15 · 17 · 21</small></div>
+    <div class="stat"><label>Uptime</label><div class="val">100<span style="font-size:20px;color:var(--teal)">%</span></div><small>season 2026</small></div>
+  </div>
+</div>
+
+<section id="servers">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="label">Servers</span>
+      <h2>Pick your generation.</h2>
+      <p>Every Aurora server runs its own matchmaking, leagues and stats — but your account, friends and club follow you everywhere.</p>
+    </div>
+
+    <article class="srow reveal">
+      <div class="snum"><span>15</span></div>
+      <div class="smeta">
+        <div class="sline"><h3>Aurora 15</h3><span class="tag">FIFA 15</span><span class="pill"><i></i>Online</span></div>
+        <p>The classic speed era. Heads-up 1v1s, legacy Pro Clubs nights and the fastest queues on the network.</p>
+        <div class="smini mono">PING 33 MS · WINDOWS · SINCE 2024</div>
+      </div>
+      <div class="sgauge">
+        <svg viewBox="0 0 84 84"><circle class="ring-t" cx="42" cy="42" r="34"/><circle class="ring-p" data-ring="15" cx="42" cy="42" r="34" transform="rotate(-90 42 42)"/></svg>
+        <div class="gtext"><span class="odo" data-online="15"></span><label>online</label></div>
+      </div>
+      <div class="scap"><strong class="mono" data-captext="15">30 / 1,000</strong><label>slots occupied</label></div>
+      <div class="sact">
+        <a class="btn btn-primary btn-sm" href="#setup">Connect</a>
+        <button class="btn btn-ghost btn-sm icon" data-copy="play.aurora.gg:25515" title="Copy server IP">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+      </div>
+    </article>
+
+    <article class="srow reveal">
+      <div class="snum"><span>17</span></div>
+      <div class="smeta">
+        <div class="sline"><h3>Aurora 17</h3><span class="tag">FIFA 17</span><span class="pill"><i></i>Online</span></div>
+        <p>The story-era engine. Balanced competitive play, seasonal ELO ladders and weekly community cups.</p>
+        <div class="smini mono">PING 29 MS · WINDOWS · SINCE 2024</div>
+      </div>
+      <div class="sgauge">
+        <svg viewBox="0 0 84 84"><circle class="ring-t" cx="42" cy="42" r="34"/><circle class="ring-p" data-ring="17" cx="42" cy="42" r="34" transform="rotate(-90 42 42)"/></svg>
+        <div class="gtext"><span class="odo" data-online="17"></span><label>online</label></div>
+      </div>
+      <div class="scap"><strong class="mono" data-captext="17">48 / 1,000</strong><label>slots occupied</label></div>
+      <div class="sact">
+        <a class="btn btn-primary btn-sm" href="#setup">Connect</a>
+        <button class="btn btn-ghost btn-sm icon" data-copy="play.aurora.gg:25517" title="Copy server IP">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+      </div>
+    </article>
+
+    <article class="srow reveal">
+      <div class="snum"><span>21</span></div>
+      <div class="smeta">
+        <div class="sline"><h3>Aurora 21</h3><span class="tag">FIFA 21</span><span class="pill"><i></i>Online</span></div>
+        <p>The modern experience. Full 11v11 team seasons, clan co-op and validated match statistics.</p>
+        <div class="smini mono">PING 41 MS · WINDOWS · SINCE 2025</div>
+      </div>
+      <div class="sgauge">
+        <svg viewBox="0 0 84 84"><circle class="ring-t" cx="42" cy="42" r="34"/><circle class="ring-p" data-ring="21" cx="42" cy="42" r="34" transform="rotate(-90 42 42)"/></svg>
+        <div class="gtext"><span class="odo" data-online="21"></span><label>online</label></div>
+      </div>
+      <div class="scap"><strong class="mono" data-captext="21">62 / 1,500</strong><label>slots occupied</label></div>
+      <div class="sact">
+        <a class="btn btn-primary btn-sm" href="#setup">Connect</a>
+        <button class="btn btn-ghost btn-sm icon" data-copy="play.aurora.gg:25521" title="Copy server IP">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section id="setup">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="label">Setup guide</span>
+      <h2>From download to kick-off.</h2>
+      <p>Four steps and you are on the pitch. One launcher covers every Aurora server — no extra clients, no manual patches.</p>
+    </div>
+    <div class="setup-grid">
+      <ol class="steps reveal">
+        <li>
+          <span class="st-no">01</span>
+          <h3>Download the launcher</h3>
+          <p>Grab the Aurora Launcher for Windows — a single lightweight client for FIFA 15, FIFA 17 and FIFA 21.</p>
+          <button class="btn btn-primary btn-sm" data-toast="AuroraLauncher-2.4.1.exe · 84 MB · download started">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download for Windows</button>
+        </li>
+        <li>
+          <span class="st-no">02</span>
+          <h3>Open the launcher</h3>
+          <p>Run it and sign in with your Aurora account. Your username, friends list and stats load instantly.</p>
+        </li>
+        <li>
+          <span class="st-no">03</span>
+          <h3>Pick your game folder</h3>
+          <p>Point the launcher at your installed FIFA folder. It verifies your files and applies the online patch automatically.</p>
+        </li>
+        <li>
+          <span class="st-no">04</span>
+          <h3>Play</h3>
+          <p>Hit Play and jump straight into matchmaking. Average setup time: under five minutes.</p>
+        </li>
+      </ol>
+
+      <div class="window reveal">
+        <div class="win-bar"><span class="wd r"></span><span class="wd y"></span><span class="wd g"></span><span>AURORA LAUNCHER — v2.4.1</span></div>
+        <div class="win-body">
+          <span class="label">Game path</span>
+          <div class="wfield">
+            <code>C:\Program Files\FIFA 21\</code>
+            <button class="btn btn-ghost btn-sm" data-toast="Folder picker — wired to the real launcher soon">Browse…</button>
+          </div>
+          <div class="wlist">
+            <div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Game files verified</div>
+            <div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Online patch applied</div>
+            <div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Signed in as <b style="color:var(--text)">&nbsp;captain_aurora</b></div>
+          </div>
+          <div class="wprog"><i></i></div>
+          <p class="wnote">READY — Aurora 21 · 62 players online</p>
+          <button class="btn btn-primary wplay" data-toast="Launching Aurora 21 — see you on the pitch">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 21 12 6 21 6 3"/></svg>
+            PLAY AURORA 21</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pulse">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="label">Network pulse</span>
+      <h2>Everything is green.</h2>
+    </div>
+    <div class="chips reveal">
+      <span class="chip ok"><i></i>Game services <b>Operational</b></span>
+      <span class="chip ok"><i></i>Matchmaking <b>Operational</b></span>
+      <span class="chip open"><i></i>Admission queue <b>Open</b></span>
+      <span class="chip ok"><i></i>Leaderboards <b>Operational</b></span>
+      <span class="upd">updated <b id="clock">--:--:--</b></span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-in">
+      <div>
+        <a class="brand" href="#"><b>AURORA</b><span>FIFA NETWORK</span></a>
+        <p class="foot-note">Aurora is a community-run, non-profit preservation project with no ties to any publisher or platform holder. All product names and trademarks belong to their respective owners. A legally owned copy of the game is required to play.</p>
+      </div>
+      <div class="foot-links">
+        <a href="#">Discord</a><a href="#">Rules</a><a href="#servers">Servers</a><a href="#setup">Setup</a><a href="#pulse">Status</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<div id="toast">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toastMsg"></span>
+</div>
+
+<script>
+/* ---------- data ---------- */
+const S = {15:{online:30,cap:1000},17:{online:48,cap:1000},21:{online:62,cap:1500}};
+const fmt = n => n.toLocaleString('en-US');
+const C = 2*Math.PI*34;
+
+/* ---------- odometer ---------- */
+function buildOdo(el,s){
+  el.innerHTML='';
+  for(const ch of s){
+    if(/\d/.test(ch)){
+      const d=document.createElement('span');d.className='dg';
+      const r=document.createElement('span');r.className='reel';
+      for(let i=0;i<10;i++){const n=document.createElement('span');n.textContent=i;r.appendChild(n);}
+      d.appendChild(r);el.appendChild(d);
+    }else{
+      const sp=document.createElement('span');sp.className='sep';sp.textContent=ch;el.appendChild(sp);
+    }
+  }
+  el.dataset.sig=s.replace(/\d/g,'#');
+}
+function setOdo(el,num){
+  const s=fmt(num), sig=s.replace(/\d/g,'#');
+  if(el.dataset.sig!==sig) buildOdo(el,s);
+  let di=0;
+  for(const ch of s) if(/\d/.test(ch))
+    el.querySelectorAll('.reel')[di++].style.transform=`translateY(-${ch}em)`;
+}
+
+/* ---------- live tick ---------- */
+function tick(){
+  let sum=0;
+  for(const id in S){
+    const s=S[id];
+    s.online=Math.max(8,Math.min(s.cap,s.online+Math.round((Math.random()-.45)*6)));
+    sum+=s.online;
+    setOdo(document.querySelector(`[data-online="${id}"]`),s.online);
+    document.querySelector(`[data-captext="${id}"]`).textContent=`${fmt(s.online)} / ${fmt(s.cap)}`;
+    document.querySelector(`[data-ring="${id}"]`).style.strokeDashOffset=C*(1-s.online/s.cap);
+  }
+  setOdo(document.getElementById('odoPlayers'),sum);
+  setOdo(document.getElementById('odoMatches'),Math.max(1,Math.round(sum/16)));
+}
+setOdo(document.getElementById('odoServers'),3);
+tick(); setInterval(tick,5000);
+
+/* ---------- clock ---------- */
+setInterval(()=>{
+  const d=new Date(),p=n=>String(n).padStart(2,'0');
+  document.getElementById('clock').textContent=`${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+},1000);
+
+/* ---------- match ticker ---------- */
+(function(){
+  const kinds=['MATCH','PRO CLUBS','11V11','ELO CUP','FRIENDLY'];
+  const mins=["12'","27'","38'","HT","56'","74'","LIVE"];
+  let items='';
+  for(let i=0;i<8;i++){
+    const srv=['AURORA 15','AURORA 17','AURORA 21'][i%3];
+    items+=`<span class="tk"><i class="dot"></i><b>${srv}</b> · ${kinds[i%kinds.length]} #${2000+i*137} · ${mins[i%mins.length]} · <span class="sc">${i%4} — ${1+i%3}</span></span>`;
+  }
+  document.getElementById('tickerTrack').innerHTML=items+items;
+})();
+
+/* ---------- toast / copy ---------- */
+const toast=document.getElementById('toast');
+let tTimer;
+function show(msg){
+  document.getElementById('toastMsg').textContent=msg;
+  toast.classList.add('show');clearTimeout(tTimer);
+  tTimer=setTimeout(()=>toast.classList.remove('show'),2400);
+}
+document.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',()=>{
+  navigator.clipboard.writeText(b.dataset.copy);
+  show('IP copied — '+b.dataset.copy);
+}));
+document.querySelectorAll('[data-toast]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.toast)));
+
+/* ---------- reveal ---------- */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
