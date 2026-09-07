@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Aurora — FIFA Online Servers</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><path d='M29 4h9L23 58H13z' fill='%2300d4ff'/><path d='M29 4h9l15 54H43z' fill='%23ff2d92'/></svg>">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><path d='M64 8C56 30 44 60 30 98l4 2c12-22 24-56 36-84z' fill='%2322d3ee'/><path d='M64 8c10 24 20 56 26 90H74C68 72 60 40 54 16z' fill='%23ec4899'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -14,19 +15,24 @@
   --purple:#8b5cf6; --violet:#7c3aed; --pink:#ff2d92; --cyan:#00d4ff; --teal:#2dd4bf; --green:#4ade80;
   --grad:linear-gradient(92deg,var(--cyan),var(--violet) 48%,var(--pink));
   --head:'Sora',sans-serif; --body:'Inter',sans-serif; --mono:'JetBrains Mono',monospace;
+  --r:22px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:var(--body);overflow-x:hidden}
+body{background:var(--bg);color:var(--text);font-family:var(--body);overflow-x:hidden;-webkit-font-smoothing:antialiased}
 ::selection{background:rgba(139,92,246,.45)}
 ::-webkit-scrollbar{width:10px}::-webkit-scrollbar-thumb{background:#2b2342;border-radius:8px}::-webkit-scrollbar-track{background:var(--bg)}
-.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+:focus-visible{outline:2px solid var(--teal);outline-offset:3px;border-radius:6px}
+.wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 .mono{font-family:var(--mono)}
 .label{font-family:var(--mono);font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--muted)}
 
+/* scroll progress */
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--grad);z-index:300;box-shadow:0 0 14px rgba(139,92,246,.7)}
+
 /* aurora background */
 .aurora{position:fixed;inset:0;z-index:-1;overflow:hidden}
-.aurora i{position:absolute;width:64vw;height:64vw;border-radius:50%;filter:blur(100px);opacity:.22;mix-blend-mode:screen}
+.aurora i{position:absolute;width:64vw;height:64vw;border-radius:50%;filter:blur(110px);opacity:.2;mix-blend-mode:screen}
 .aurora i:nth-child(1){background:radial-gradient(circle at 35% 35%,#7c3aed,transparent 62%);top:-22%;left:-12%;animation:d1 26s ease-in-out infinite alternate}
 .aurora i:nth-child(2){background:radial-gradient(circle at 60% 40%,#14b8a6,transparent 60%);top:-14%;right:-18%;animation:d2 32s ease-in-out infinite alternate}
 .aurora i:nth-child(3){background:radial-gradient(circle at 50% 50%,#ec4899,transparent 62%);bottom:-32%;left:18%;animation:d3 38s ease-in-out infinite alternate}
@@ -35,47 +41,50 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);overflow-x:h
 @keyframes d3{to{transform:translate(6vw,-8vh) rotate(-25deg) scale(1.2)}}
 
 /* nav */
-nav{position:sticky;top:0;z-index:100;background:rgba(8,6,15,.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
-.nav-in{display:flex;align-items:center;gap:32px;height:70px}
+nav{position:sticky;top:0;z-index:100;background:rgba(8,6,15,.75);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+.nav-in{display:flex;align-items:center;gap:32px;height:72px}
 .brand{display:flex;align-items:center;gap:13px;text-decoration:none;color:var(--text)}
-.logo-box{position:relative;width:36px;height:36px;filter:drop-shadow(0 0 12px rgba(124,58,237,.6))}
-.logo-box img,.logo-box svg{position:absolute;inset:0;width:100%;height:100%}
+.logo-box{position:relative;width:38px;height:38px;filter:drop-shadow(0 0 12px rgba(124,58,237,.55))}
+.logo-box img,.logo-box svg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
 .brand b{font-family:var(--head);font-size:18px;letter-spacing:.3em;font-weight:800}
 .brand span{font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:var(--muted);border-left:1px solid var(--line2);padding-left:12px}
-.nav-links{display:flex;gap:26px;margin-left:auto}
-.nav-links a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;transition:.25s}
+.nav-links{display:flex;gap:28px;margin-left:auto}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;transition:.25s;position:relative}
+.nav-links a::after{content:'';position:absolute;left:0;right:100%;bottom:-6px;height:2px;background:var(--grad);transition:.3s;border-radius:2px}
 .nav-links a:hover{color:var(--text)}
+.nav-links a:hover::after{right:0}
 .live-pill{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);background:rgba(45,212,191,.08);border:1px solid rgba(45,212,191,.32);padding:8px 14px;border-radius:999px}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 0 rgba(45,212,191,.55);animation:pulse 2s infinite}
 @keyframes pulse{70%{box-shadow:0 0 0 9px rgba(45,212,191,0)}100%{box-shadow:0 0 0 0 rgba(45,212,191,0)}}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border:none;cursor:pointer;font-family:var(--head);font-weight:700;font-size:14px;padding:13px 24px;border-radius:12px;text-decoration:none;color:var(--text);transition:.25s}
-.btn-primary{background:var(--grad);box-shadow:0 10px 30px rgba(124,58,237,.35)}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 38px rgba(255,45,146,.35)}
-.btn-ghost{background:transparent;border:1px solid var(--line2);color:var(--muted)}
-.btn-ghost:hover{border-color:var(--purple);color:var(--text)}
+.btn-primary{background:var(--grad);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 10px 30px rgba(124,58,237,.35)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 14px 38px rgba(255,45,146,.4)}
+.btn-ghost{background:rgba(255,255,255,.02);border:1px solid var(--line2);color:var(--muted)}
+.btn-ghost:hover{border-color:var(--purple);color:var(--text);background:rgba(139,92,246,.08)}
 .btn-sm{padding:10px 18px;font-size:13px;border-radius:10px}
 .btn.icon{padding:10px 12px}
 
 /* hero */
-.hero{padding:96px 0 70px;position:relative}
+.hero{padding:100px 0 76px;position:relative}
 .hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center}
 .eyebrow{display:inline-flex;gap:10px;align-items:center;font-family:var(--mono);font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--teal);border:1px solid rgba(45,212,191,.3);background:rgba(45,212,191,.07);padding:8px 16px;border-radius:999px;margin-bottom:26px}
-h1{font-family:var(--head);font-weight:800;font-size:clamp(42px,6vw,74px);line-height:1.04;letter-spacing:-.02em}
+h1{font-family:var(--head);font-weight:800;font-size:clamp(42px,6vw,74px);line-height:1.04;letter-spacing:-.03em}
 h1 .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .sub{margin:24px 0 34px;color:var(--muted);font-size:17px;line-height:1.75;max-width:540px}
 .hero-cta{display:flex;gap:14px;flex-wrap:wrap}
-.trust{margin-top:34px;font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.08em}
+.trust{margin-top:36px;font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.08em}
 .trust b{color:var(--text)}
-/* emblem */
-.emblem{position:relative;width:330px;height:330px;margin:0 auto}
+.emblem{position:relative;width:340px;height:340px;margin:0 auto}
 .emblem .ring{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 45deg,var(--cyan) 75deg,var(--violet) 160deg,var(--pink) 250deg,transparent 305deg);filter:blur(3px);-webkit-mask:radial-gradient(closest-side,transparent 63%,#000 68%);mask:radial-gradient(closest-side,transparent 63%,#000 68%);animation:spin 16s linear infinite}
-.emblem .ring.r2{inset:34px;opacity:.55;animation:spin 22s linear infinite reverse}
+.emblem .ring.r2{inset:36px;opacity:.55;animation:spin 22s linear infinite reverse}
 @keyframes spin{to{transform:rotate(360deg)}}
 .emblem .core{position:absolute;inset:0;display:grid;place-items:center}
-.emblem .core svg{width:132px;height:132px;filter:drop-shadow(0 0 34px rgba(124,58,237,.75))}
+.emblem .core .logo-box{width:150px;height:150px;filter:drop-shadow(0 0 40px rgba(124,58,237,.75))}
 
 /* ticker */
-.ticker{border-block:1px solid var(--line);background:rgba(10,8,18,.55);overflow:hidden}
+.ticker{border-block:1px solid var(--line);background:rgba(10,8,18,.55);overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
 .ticker-track{display:flex;gap:56px;width:max-content;padding:13px 0;animation:tick 46s linear infinite}
 .ticker:hover .ticker-track{animation-play-state:paused}
 @keyframes tick{to{transform:translateX(-50%)}}
@@ -84,9 +93,10 @@ h1 .grad{background:var(--grad);-webkit-background-clip:text;background-clip:tex
 .tk .sc{color:var(--teal)}
 
 /* stats strip */
-.strip{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,#151129,#0d0b16);margin-top:-34px;position:relative;z-index:2;overflow:hidden}
-.stat{padding:30px 34px;border-left:1px solid var(--line)}
+.strip{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);border-radius:var(--r);background:linear-gradient(180deg,#151129,#0d0b16);margin-top:-34px;position:relative;z-index:2;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.05)}
+.stat{padding:32px 34px;border-left:1px solid var(--line);transition:.3s}
 .stat:first-child{border-left:none}
+.stat:hover{background:rgba(139,92,246,.05)}
 .stat label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
 .stat .val{font-family:var(--head);font-weight:800;font-size:38px;line-height:1}
 .stat small{display:block;margin-top:10px;font-family:var(--mono);font-size:11px;color:var(--teal)}
@@ -99,14 +109,14 @@ h1 .grad{background:var(--grad);-webkit-background-clip:text;background-clip:tex
 .odo .sep{opacity:.35;margin:0 .05em}
 
 /* sections */
-section{padding:100px 0}
+section{padding:110px 0}
 .sec-head{margin-bottom:52px}
-.sec-head h2{font-family:var(--head);font-weight:800;font-size:clamp(30px,4vw,46px);letter-spacing:-.01em;margin-top:14px}
+.sec-head h2{font-family:var(--head);font-weight:800;font-size:clamp(30px,4vw,46px);letter-spacing:-.02em;margin-top:14px}
 .sec-head p{color:var(--muted);margin-top:14px;max-width:560px;line-height:1.7}
 
 /* server rows */
-.srow{display:grid;grid-template-columns:82px 1fr 118px 132px auto;gap:30px;align-items:center;background:linear-gradient(180deg,#151129,#0e0b18);border:1px solid var(--line);border-radius:20px;padding:28px 32px;margin-bottom:18px;transition:.3s}
-.srow:hover{transform:translateY(-4px);border-color:rgba(139,92,246,.5);box-shadow:0 22px 60px rgba(0,0,0,.5)}
+.srow{display:grid;grid-template-columns:82px 1fr 118px 132px auto;gap:30px;align-items:center;background:linear-gradient(180deg,#151129,#0e0b18);border:1px solid var(--line);border-radius:var(--r);padding:30px 34px;margin-bottom:18px;transition:.3s;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+.srow:hover{transform:translateY(-4px);border-color:rgba(139,92,246,.5);box-shadow:0 22px 60px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06)}
 .snum{width:82px;height:82px;border-radius:20px;display:grid;place-items:center;border:1px solid transparent;background:linear-gradient(#171330,#171330) padding-box,var(--grad) border-box}
 .snum span{font-family:var(--head);font-weight:800;font-size:34px;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .sline{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
@@ -130,15 +140,14 @@ section{padding:100px 0}
 /* setup */
 .setup-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start}
 .steps{list-style:none;position:relative}
-.steps li{position:relative;padding:0 0 44px 66px}
-.steps li::before{content:'';position:absolute;left:21px;top:46px;bottom:6px;width:2px;background:linear-gradient(180deg,var(--violet),transparent)}
+.steps li{position:relative;padding:0 0 46px 66px}
+.steps li::before{content:'';position:absolute;left:21px;top:48px;bottom:8px;width:2px;background:linear-gradient(180deg,var(--violet),transparent)}
 .steps li:last-child::before{display:none}
-.st-no{position:absolute;left:0;top:0;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-family:var(--mono);font-size:13px;font-weight:600;color:var(--text);border:1px solid transparent;background:linear-gradient(#171330,#171330) padding-box,var(--grad) border-box}
+.st-no{position:absolute;left:0;top:0;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-family:var(--mono);font-size:13px;font-weight:600;border:1px solid transparent;background:linear-gradient(#171330,#171330) padding-box,var(--grad) border-box}
 .steps h3{font-family:var(--head);font-size:19px;font-weight:700;margin-bottom:10px}
 .steps p{color:var(--muted);font-size:14.5px;line-height:1.7;max-width:440px}
 .steps .btn{margin-top:16px}
-/* launcher mockup */
-.window{background:#100d1c;border:1px solid var(--line2);border-radius:18px;overflow:hidden;box-shadow:0 40px 90px rgba(0,0,0,.6);position:sticky;top:96px}
+.window{background:#100d1c;border:1px solid var(--line2);border-radius:18px;overflow:hidden;box-shadow:0 40px 90px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.05);position:sticky;top:96px}
 .win-bar{display:flex;align-items:center;gap:8px;padding:14px 18px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.02)}
 .wd{width:11px;height:11px;border-radius:50%}
 .wd.r{background:#ff5f57}.wd.y{background:#febc2e}.wd.g{background:#28c840}
@@ -158,7 +167,8 @@ section{padding:100px 0}
 
 /* pulse */
 .chips{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
-.chip{display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:rgba(255,255,255,.02);border-radius:999px;padding:12px 20px;font-size:14px;font-weight:500}
+.chip{display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:rgba(255,255,255,.02);border-radius:999px;padding:12px 20px;font-size:14px;font-weight:500;transition:.25s}
+.chip:hover{border-color:var(--line2);transform:translateY(-2px)}
 .chip i{width:8px;height:8px;border-radius:50%}
 .chip.ok i{background:var(--green);box-shadow:0 0 10px rgba(74,222,128,.7)}
 .chip.open i{background:var(--cyan);box-shadow:0 0 10px rgba(0,212,255,.7)}
@@ -184,12 +194,13 @@ footer{border-top:1px solid var(--line);padding:52px 0;background:rgba(8,6,15,.6
 
 @media(max-width:1080px){
   .srow{grid-template-columns:82px 1fr auto}
-  .sgauge,.scap{grid-column:2}
-  .sact{grid-column:2;justify-content:flex-start}
+  .sgauge,.scap,.sact{grid-column:2}
+  .sact{justify-content:flex-start}
 }
 @media(max-width:920px){
   .hero-grid{grid-template-columns:1fr}
   .emblem{width:260px;height:260px}
+  .emblem .core .logo-box{width:110px;height:110px}
   .nav-links{display:none}
   .strip{grid-template-columns:1fr 1fr;margin-top:-20px}
   .stat:nth-child(3){border-left:none}
@@ -197,31 +208,35 @@ footer{border-top:1px solid var(--line);padding:52px 0;background:rgba(8,6,15,.6
   .window{position:static}
 }
 @media(max-width:560px){.strip{grid-template-columns:1fr}.stat{border-left:none;border-top:1px solid var(--line)}.stat:first-child{border-top:none}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
 
-<!-- shared defs: logo symbol + ring gradient -->
+<div id="progress"></div>
+
+<!-- shared defs -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
     <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
       <stop stop-color="#00d4ff"/><stop offset=".5" stop-color="#8b5cf6"/><stop offset="1" stop-color="#ff2d92"/>
     </linearGradient>
-    <symbol id="auroraLogo" viewBox="0 0 64 64">
+    <!-- drawn fallback replica of the Aurora logo (used only if logo.png is missing) -->
+    <symbol id="auroraLogo" viewBox="0 0 120 120">
       <defs>
-        <linearGradient id="lb" x1="14" y1="58" x2="34" y2="4" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#00d4ff"/><stop offset=".55" stop-color="#3b82f6"/><stop offset="1" stop-color="#7c3aed"/>
+        <linearGradient id="gL" x1="30" y1="100" x2="66" y2="8" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#22d3ee"/><stop offset=".5" stop-color="#3b82f6"/><stop offset="1" stop-color="#4f46e5"/>
         </linearGradient>
-        <linearGradient id="lp" x1="32" y1="4" x2="52" y2="58" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#7c3aed"/><stop offset=".5" stop-color="#d946ef"/><stop offset="1" stop-color="#ff2d92"/>
+        <linearGradient id="gR" x1="64" y1="8" x2="88" y2="98" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#4f46e5"/><stop offset=".45" stop-color="#ec4899"/><stop offset=".75" stop-color="#ff2d92"/><stop offset="1" stop-color="#2563eb"/>
         </linearGradient>
-        <linearGradient id="lw" x1="18" y1="46" x2="50" y2="40" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#00d4ff"/><stop offset=".5" stop-color="#7c3aed"/><stop offset="1" stop-color="#ff2d92"/>
+        <linearGradient id="gW" x1="42" y1="60" x2="82" y2="90" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#ff2d92"/><stop offset="1" stop-color="#c026d3"/>
         </linearGradient>
       </defs>
-      <path d="M29 4h9L23 58H13z" fill="url(#lb)"/>
-      <path d="M29 4h9l15 54H43z" fill="url(#lp)"/>
-      <path d="M17 45c8-9 15 4 28-6l3 8c-12 10-21-3-28 4z" fill="url(#lw)"/>
+      <path d="M64 8C56 30 44 60 30 98l4 2c12-22 24-56 36-84z" fill="url(#gL)"/>
+      <path d="M64 8c10 24 20 56 26 90H74C68 72 60 40 54 16z" fill="url(#gR)"/>
+      <path d="M42 60c10-8 20-4 28 4 6 6 10 16 12 26l-8 8c-4-14-10-26-18-32-6-4-10-6-14-6z" fill="url(#gW)"/>
     </symbol>
   </defs>
 </svg>
@@ -232,8 +247,7 @@ footer{border-top:1px solid var(--line);padding:52px 0;background:rgba(8,6,15,.6
   <div class="wrap nav-in">
     <a class="brand" href="#">
       <span class="logo-box">
-        <!-- ضع صورة شعارك باسم logo.png بجانب الملف وستظهر تلقائيًا، وإلا يظهر الشعار المرسوم -->
-        <img src="logo.png" alt="Aurora" onerror="this.remove()">
+        <img src="logo.png" alt="Aurora logo" onerror="this.remove()">
         <svg><use href="#auroraLogo"/></svg>
       </span>
       <b>AURORA</b><span>FIFA NETWORK</span>
@@ -264,7 +278,12 @@ footer{border-top:1px solid var(--line);padding:52px 0;background:rgba(8,6,15,.6
     </div>
     <div class="emblem reveal in" aria-hidden="true">
       <div class="ring"></div><div class="ring r2"></div>
-      <div class="core"><svg><use href="#auroraLogo"/></svg></div>
+      <div class="core">
+        <span class="logo-box">
+          <img src="logo.png" alt="" onerror="this.remove()">
+          <svg><use href="#auroraLogo"/></svg>
+        </span>
+      </div>
     </div>
   </div>
 </header>
@@ -302,7 +321,7 @@ footer{border-top:1px solid var(--line);padding:52px 0;background:rgba(8,6,15,.6
       <div class="scap"><strong class="mono" data-captext="15">30 / 1,000</strong><label>slots occupied</label></div>
       <div class="sact">
         <a class="btn btn-primary btn-sm" href="#setup">Connect</a>
-        <button class="btn btn-ghost btn-sm icon" data-copy="play.aurora.gg:25515" title="Copy server IP">
+        <button class="btn btn-ghost btn-sm icon" data-copy="play.aurora.gg:25515" title="Copy server IP" aria-label="Copy server IP">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
         </button>
       </div>
@@ -322,7 +341,7 @@ footer{border-top:1px solid var(--line);padding:52px 0;background:rgba(8,6,15,.6
       <div class="scap"><strong class="mono" data-captext="17">48 / 1,000</strong><label>slots occupied</label></div>
       <div class="sact">
         <a class="btn btn-primary btn-sm" href="#setup">Connect</a>
-        <button class="btn btn-ghost btn-sm icon" data-copy="play.aurora.gg:25517" title="Copy server IP">
+        <button class="btn btn-ghost btn-sm icon" data-copy="play.aurora.gg:25517" title="Copy server IP" aria-label="Copy server IP">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
         </button>
       </div>
@@ -342,7 +361,7 @@ footer{border-top:1px solid var(--line);padding:52px 0;background:rgba(8,6,15,.6
       <div class="scap"><strong class="mono" data-captext="21">62 / 1,500</strong><label>slots occupied</label></div>
       <div class="sact">
         <a class="btn btn-primary btn-sm" href="#setup">Connect</a>
-        <button class="btn btn-ghost btn-sm icon" data-copy="play.aurora.gg:25521" title="Copy server IP">
+        <button class="btn btn-ghost btn-sm icon" data-copy="play.aurora.gg:25521" title="Copy server IP" aria-label="Copy server IP">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
         </button>
       </div>
@@ -428,7 +447,13 @@ footer{border-top:1px solid var(--line);padding:52px 0;background:rgba(8,6,15,.6
   <div class="wrap">
     <div class="foot-in">
       <div>
-        <a class="brand" href="#"><b>AURORA</b><span>FIFA NETWORK</span></a>
+        <a class="brand" href="#">
+          <span class="logo-box" style="width:30px;height:30px">
+            <img src="logo.png" alt="" onerror="this.remove()">
+            <svg><use href="#auroraLogo"/></svg>
+          </span>
+          <b>AURORA</b><span>FIFA NETWORK</span>
+        </a>
         <p class="foot-note">Aurora is a community-run, non-profit preservation project with no ties to any publisher or platform holder. All product names and trademarks belong to their respective owners. A legally owned copy of the game is required to play.</p>
       </div>
       <div class="foot-links">
@@ -448,6 +473,12 @@ footer{border-top:1px solid var(--line);padding:52px 0;background:rgba(8,6,15,.6
 const S = {15:{online:30,cap:1000},17:{online:48,cap:1000},21:{online:62,cap:1500}};
 const fmt = n => n.toLocaleString('en-US');
 const C = 2*Math.PI*34;
+
+/* ---------- scroll progress ---------- */
+addEventListener('scroll',()=>{
+  const h=document.documentElement;
+  document.getElementById('progress').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+},{passive:true});
 
 /* ---------- odometer ---------- */
 function buildOdo(el,s){
